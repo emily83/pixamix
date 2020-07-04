@@ -21,7 +21,8 @@ const initialState = {
     canvasData: localStorage.getItem('canvasData') ? localStorage.getItem('canvasData') : null,
     error: null,
     message: null,
-    socket: io(':5000'),
+    //socket: io(':5000'),
+    socket: io(),
     blockerMsg: null,
     showResumeBtn: false
 }
