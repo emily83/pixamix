@@ -1,0 +1,133 @@
+.game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 98%;
+    max-width: 600px;
+    height: calc(100% - 1em);
+    text-align: center;
+    color: #565656;   
+    border: 1px solid var(--primary-colour);
+    box-sizing: border-box;   
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin: 10px auto;
+    position: relative;
+}
+
+.gameHeader {
+    font-size: 1.3em;
+    background-color: var(--primary-colour);
+    color: white;
+    width: 100%;
+    padding: 0.3em;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.gameHeader2 {
+    background-color: var(--secondary-colour);
+    border-bottom: 1px solid var(--primary-colour);
+    width: 100%;
+    height: 2.6em;
+    box-sizing: border-box;
+    padding: 0.2em;
+}
+
+.word {
+    font-size: 1.67em;
+    color: var(--primary-colour);
+    font-weight: bold;
+}
+
+.guess {
+    font-size: 1em;
+    width: 70%;
+    border: 1px solid var(--primary-colour);
+}
+
+.brushP {
+    cursor: url(../images/pencil.png) 3 45, auto;	
+}
+
+.brushR {
+    cursor: url(../images/rubber.png) 8 40, auto;	
+} 
+
+.controls {
+    position: absolute;
+    left: 0.5em;
+    top: 5.3em;
+    z-index: 99;
+}
+
+.controls img {
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: white;
+    padding: 0.1em;
+    border-radius: 3px;
+    width: 1.8em;
+    height: 1.8em;
+    margin-right: 0.4em;
+    border: 1px solid var(--primary-colour);
+    z-index: 99;
+}
+
+.controls img.selected {
+    background-color: var(--secondary-colour);
+}
+
+.clearBtn {
+    position: absolute;
+    right: 0.3em;
+    top: 4.4em;
+    width: 3.5em;
+    font-size: 1.2em;
+    padding: 0.1em 0.4em;
+    background-color: white;
+    color: var(--primary-colour);
+    border-radius: 3px;
+    border: 0;
+    align-self: flex-end;
+    height: 1.6em;
+    font-weight:bold;
+    border: 1px solid var(--primary-colour);
+    z-index: 99;
+    cursor: pointer;
+    outline: none;
+}
+
+.startBtn {
+    z-index: 101;
+}
+
+.drawing { 
+    align-self: center;
+    max-height: calc(100% - 4em);
+    max-width: 100%; 
+}
+
+.gameHeader2 form {
+    display: flex;
+    width: 100%;
+}
+
+.gameHeader2 form.hide {
+    display: none;
+}
+
+.guessInput {
+    font-size: 1.2em;
+    padding: 0.1em;
+    width: 0;
+    flex-grow: 1;
+    border: 1px solid #8f8f8f;
+}
+
+.guessSubmitBtn {
+    font-size: 1em;
+    width: 4em;
+    border-radius: 0;
+    border-left: 0;
+}

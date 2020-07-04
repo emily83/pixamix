@@ -1,0 +1,1 @@
+mongoimport --uri "mongodb+srv://emily:mJasper123@testcluster1-mbab7.mongodb.net/pixamix?retryWrites=true&w=majority" --type csv --collection words --headerline --drop --file words3.csv

@@ -1,0 +1,13 @@
+/* --------------------------- WELCOME PAGE --------------------------- */
+
+button {
+    width: 15em;
+}
+
+#sessionError {
+    color: red;
+}
+
+#sessionError span {
+    font-weight: bold;
+}

@@ -1,0 +1,29 @@
+.blocker {
+  position: absolute;
+  top: 2.4em;
+  width: 100%;
+  height: calc(100% - 2.49em);
+  background: white;
+  opacity: 0.9;
+  z-index: 100;
+}
+
+.blocker > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.5em;
+  color: var(--primary-colour);
+  text-align: center;
+  padding: 0 4vw;
+}
+
+.blocker > div p {
+  white-space: pre-line;
+}
+
+.blocker .resumeBtn {
+  width: 50%;
+}

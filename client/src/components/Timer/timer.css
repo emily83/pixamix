@@ -1,0 +1,31 @@
+.timer {
+    position: absolute;
+    right: 0.3em;
+    top: 0.3em;
+}
+
+.timerFinished {
+    position: absolute;
+    right: 0.3em;
+    top: 0.8em;
+    font-size: 0.6em;
+    animation: blinker 1s step-start infinite;
+}
+
+.timerControl {
+    position: absolute;
+    left: 0.4em;
+    top: 0.4em;
+    width: 1em;
+    cursor: pointer;
+}
+
+.timeLow {
+    animation: blinker 1s step-start infinite;
+}
+
+@keyframes blinker {
+50% {
+    opacity: 0;
+}
+}

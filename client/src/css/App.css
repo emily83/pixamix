@@ -1,0 +1,130 @@
+:root {
+  --primary-colour: #f9046c;
+  --secondary-colour: yellow;
+}
+
+html {
+  font-size: 16px;
+  font-family: "Century Gothic", CenturyGothic, Geneva, AppleGothic, sans-serif;
+  height: 100%;
+}
+
+body, #root {
+    margin: 0;
+    background-color: #eee;
+    height: 100%;
+}
+
+@media screen and (min-width: 320px) {
+  html {
+    font-size: calc(16px + 6 * ((100vw - 320px) / 680));
+  }
+  
+}
+@media screen and (min-width: 1000px) {
+  html {
+    font-size: 22px;
+  }
+}
+
+.app {
+    height: 100%;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1200px;
+    background-color: white;
+    border-left: 1px solid #bcbcbc;
+    border-right: 1px solid #bcbcbc;
+    
+    /* Prevent nearby text being highlighted when accidentally dragging mouse outside confines of the canvas */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 2vw;
+  height: calc(100% - 6.4em);
+  position: relative;
+}
+
+.btn {
+  background-color: var(--primary-colour);
+  color: white;
+  border: 1px solid #8f8f8f;
+  border-radius: 4px;
+}
+
+.largeBtn {
+  font-size: 1em;
+  padding: 5px 10px;
+  margin-top: 20px;   
+}
+
+.smallBtn {
+  font-size: 0.6em;
+  padding: 2px 10px;
+  margin-top: 20px;
+}
+
+form.start-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form.start-game .error {
+  color: var(--primary-colour);
+  margin-top: 3vh;
+  height: 1em;
+}
+
+form.start-game .form-control {
+  color: #565656;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form.start-game label {
+  margin-bottom: 2px;
+  margin-top: 2em;
+  font-size: 0.9em;
+}
+
+form.start-game input {
+  display: block;
+  font-size: 1.2em;
+  padding: 5px;
+  text-align: center;
+}
+
+form.start-game .nameInput {
+  width: 8em;
+}
+
+form.start-game .roomInput {
+  width: 3em;
+  text-transform: uppercase;
+}
+
+p {
+  margin: 1.5vh 0;
+  text-align: center;
+}
+
+p .highlight {
+  font-weight: bold;
+}
+
+p.roomLink {
+  color: var(--primary-colour);
+  font-weight: bold;
+  user-select: all;
+}
