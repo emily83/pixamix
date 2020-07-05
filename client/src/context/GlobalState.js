@@ -4,6 +4,11 @@ import axios from 'axios';
 import io from "socket.io-client";
 import Cookies from 'js-cookie';
 
+let socketURL = '';
+if (process.env.NODE_ENV === 'development') {
+    socketURL = ':5000';
+}
+
 // Initial state
 const initialState = { 
     roomCode: Cookies.get('roomCode') ? Cookies.get('roomCode') : '',
@@ -21,8 +26,7 @@ const initialState = {
     canvasData: localStorage.getItem('canvasData') ? localStorage.getItem('canvasData') : null,
     error: null,
     message: null,
-    //socket: io(':5000'),
-    socket: io(),
+    socket: io(socketURL),
     blockerMsg: null,
     showResumeBtn: false
 }
@@ -43,8 +47,8 @@ export const GlobalProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AppReducer, initialState);
 
     // Actions
-    async function getRoomPlayer() {    
-             
+    async function getRoomPlayer() {   
+
         setStatus('checkingStatus');
 
         try {
