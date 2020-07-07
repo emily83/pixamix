@@ -52,7 +52,7 @@ export const Timer = ({ seconds, handleCountdownComplete, handleCountdownTick })
 
     const handleTick =  timeDelta => {
       const secondsRemaining = timeDelta.total / 1000;
-      Cookies.set('secondsRemaining', secondsRemaining, { expires: 1 });  
+      Cookies.set('secondsRemaining', secondsRemaining, { expires: 1 });
       if (handleCountdownTick) {
         handleCountdownTick(secondsRemaining);
       }    

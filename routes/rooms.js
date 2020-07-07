@@ -3,7 +3,7 @@ const router = express.Router();
 const { getRoom, addRoom, updateRoom } = require('../controllers/rooms');
 const { addPlayerToRoom, getPlayers, deletePlayer, getRoomPlayer } = require('../controllers/players');
 const { getGames, addGame } = require('../controllers/games');
-const { getPlayerCard } = require('../controllers/cards');
+const { getPlayerCard, getCards } = require('../controllers/cards');
 const { addRound, getRound } = require('../controllers/rounds');
 
 router
@@ -33,6 +33,10 @@ router
 router
     .route('/:code/games/:id/playercards/:playerID')
     .get(getPlayerCard);
+
+router
+    .route('/:code/games/:id/cards')
+    .get(getCards);
 
 router
     .route('/:code/games/:id/cards/:cardNo/rounds')

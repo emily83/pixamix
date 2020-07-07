@@ -28,10 +28,13 @@ const initialState = {
     message: null,
     socket: io(socketURL),
     blockerMsg: null,
-    showResumeBtn: false
+    showResumeBtn: false,
+    completedCards: [],
+    revealCardNo: Cookies.get('revealCardNo') ? parseInt(Cookies.get('revealCardNo')) : null,
+    revealRoundNo: Cookies.get('revealRoundNo') ? parseInt(Cookies.get('revealRoundNo')) : null,
 }
 
-//
+
 const config = {
     headers: {
         'Content-Type': 'application/json'
@@ -87,24 +90,34 @@ export const GlobalProvider = ({ children }) => {
             }); 
 
             if (data.gameID) {
-                console.log(data.gameID);
-                console.log(data.playerCardNumber);
-                console.log(data.round);
                 
-                dispatch({
-                    type: 'SET_GAME',
-                    payload: {
-                        gameID: data.gameID,
-                        playerCardNumber: data.playerCardNumber,
-                        round: data.round
-                    }
-                });    
+                if (data.status === 'playing') {
 
-                if (player.isHost) {
-                    stopTimer('You have re-connected', true);
-                } else {
-                    stopTimer('Waiting for host to restart game', false);
+                    dispatch({
+                        type: 'SET_GAME',
+                        payload: {
+                            gameID: data.gameID,
+                            playerCardNumber: data.playerCardNumber,
+                            round: data.round
+                        }
+                    });    
+    
+                    if (player.isHost) {
+                        stopTimer('You have re-connected', true);
+                    } else {
+                        stopTimer('Waiting for host to restart game', false);
+                    }
+
+                } else if (data.status === 'reveal') {
+                       console.log(data.cards);
+                       
+                    dispatch({
+                        type: 'SET_CARDS',
+                        payload: data.cards
+                    });
+
                 }
+          
             }
 
         } catch (err) {
@@ -128,6 +141,8 @@ export const GlobalProvider = ({ children }) => {
         Cookies.remove('secondsRemaining');
         Cookies.remove('canvasData');
         Cookies.remove('blockerMsg');
+        Cookies.remove('revealCardNo');  
+        Cookies.remove('revealRoundNo');  
     }
 
     async function addRoom(hostName) {
@@ -322,6 +337,16 @@ export const GlobalProvider = ({ children }) => {
             const res = await axios.post(`/api/v1/rooms/${state.roomCode}/games`);
             const game = res.data.data;
 
+            dispatch({
+                type: 'CLEAR_GAME',
+                payload: state.roomCode
+            });
+    
+            Cookies.remove('timerState');
+            Cookies.remove('secondsRemaining');
+            Cookies.remove('canvasData');
+            Cookies.remove('blockerMsg');
+
             //emit message to start game
             state.socket.emit('startGame', { room: state.roomCode, gameID: game._id, playerID: state.playerID });
             const playerCard = game.cards.find(card => card.playerID === state.playerID);
@@ -329,6 +354,7 @@ export const GlobalProvider = ({ children }) => {
                 type: 'INIT_GAME',
                 payload: { room: state.roomCode, gameID: game._id, card: playerCard }
             });
+            
             stopTimer('Waiting for all players to be ready');
 
             //set self as ready
@@ -375,6 +401,8 @@ export const GlobalProvider = ({ children }) => {
         Cookies.remove('secondsRemaining');
         Cookies.remove('canvasData');
         Cookies.remove('blockerMsg');
+        Cookies.remove('revealCardNo');  
+        Cookies.remove('revealRoundNo');  
     }
 
     async function initGame(room, gameID) {
@@ -382,6 +410,16 @@ export const GlobalProvider = ({ children }) => {
         try {
             const res = await axios.get(`/api/v1/rooms/${room}/games/${gameID}/playercards/${state.playerID}`);
             const card = res.data.data;
+
+            dispatch({
+                type: 'CLEAR_GAME',
+                payload: state.roomCode
+            });
+    
+            Cookies.remove('timerState');
+            Cookies.remove('secondsRemaining');
+            Cookies.remove('canvasData');
+            Cookies.remove('blockerMsg');
 
             dispatch({
                 type: 'INIT_GAME',
@@ -405,10 +443,20 @@ export const GlobalProvider = ({ children }) => {
     }
 
     function startTimer() {
-        dispatch({
-            type: 'START_TIMER',
-            payload: null
-        });
+       if (state.round.complete) {
+            if (state.round.number === state.allPlayers.length) {
+                stopTimer('Game Over! \n Waiting for all players to finish');
+            } else {
+                stopTimer('Waiting for all players to be ready');
+            }
+       } else {
+
+            dispatch({
+                type: 'START_TIMER',
+                payload: null
+            });
+
+       }
     }
 
     function stopTimer(msg, showResumeBtn = false) {
@@ -418,7 +466,13 @@ export const GlobalProvider = ({ children }) => {
         });
     }
     async function submitRound(data) {
-        const roundData =                 { 
+
+        dispatch({
+            type: 'COMPLETE_ROUND',
+            payload: null
+        });
+
+        const roundData = { 
             number: state.round.number,
             type: state.round.type,
             playerID: state.playerID
@@ -426,7 +480,7 @@ export const GlobalProvider = ({ children }) => {
         if (data.canvasData) {
             roundData.canvasData = data.canvasData;
         } else {
-            roundData.guess = data.guess;
+            roundData.word = data.word;
         }
 
         try {        
@@ -436,8 +490,14 @@ export const GlobalProvider = ({ children }) => {
                 config
             );
 
-            stopTimer('Waiting for all players to be ready');
-
+            const numPlayers = state.allPlayers.length;
+            const roundNo = parseInt(state.round.number)
+            if (roundNo === numPlayers) {
+                stopTimer('Game Over! \n Waiting for all players to finish');
+            } else {
+                stopTimer('Waiting for all players to be ready');
+            }
+            
             //set self as submitted
             playerSubmitted(state.roomCode, state.playerID);
 
@@ -481,9 +541,9 @@ export const GlobalProvider = ({ children }) => {
         const numPlayers = state.allPlayers.length;
         const roundNo = parseInt(state.round.number)
         if (roundNo === numPlayers) {
+            getRevealData();
+            resetReady();
             setStatus('reveal');
-            console.log('reveal');
-            
             return false;
         }
         const nextRoundNo = roundNo + 1;
@@ -519,6 +579,44 @@ export const GlobalProvider = ({ children }) => {
         }
     }
 
+    async function getRevealData() {
+   
+        try {
+            const res = await axios.get(`/api/v1/rooms/${state.roomCode}/games/${state.gameID}/cards`);
+            const cards = res.data.data;
+
+            dispatch({
+                type: 'SET_CARDS',
+                payload: cards
+            });
+        
+        } catch (err) {
+            console.log(err);
+            
+            dispatch({
+                type: 'ROOM_ERROR',
+                payload: err.response.data.error
+            });
+        }
+    }
+
+    function reveal(cardNo, roundNo) {
+        setReveal(cardNo, roundNo)
+        
+         //emit message to tell server what is currently being revealed
+         state.socket.emit('reveal', { room: state.roomCode, cardNo, roundNo });
+    }
+
+    function setReveal(cardNo, roundNo) {
+        dispatch({
+            type: 'SET_REVEAL',
+            payload: { cardNo, roundNo }
+        });
+
+        Cookies.set('revealCardNo', cardNo, { expires: 1 });  
+        Cookies.set('revealRoundNo', roundNo, { expires: 1 });   
+    }
+
     return (
         <GlobalContext.Provider value={{                            
             roomCode: state.roomCode,
@@ -538,6 +636,9 @@ export const GlobalProvider = ({ children }) => {
             canvasData: state.canvasData,
             blockerMsg: state.blockerMsg,
             showResumeBtn: state.showResumeBtn,
+            completedCards: state.completedCards,
+            revealCardNo: state.revealCardNo,
+            revealRoundNo: state.revealRoundNo,
             addRoom,
             joinRoom,
             getRoomPlayer,
@@ -562,7 +663,9 @@ export const GlobalProvider = ({ children }) => {
             playerSubmitted,
             playerReady,
             resetReady,
-            getNextRound
+            getNextRound,
+            reveal,
+            setReveal
         }}>
             {children}
         </GlobalContext.Provider>

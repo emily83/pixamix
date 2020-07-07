@@ -8,7 +8,11 @@ export const GameHeader = ({ handleCountdownComplete, handleCountdownTick }) => 
     const { timerState, stopTimer, isHost, socket, roomCode, secondsRemaining, round } = useContext(GlobalContext);
 
     //if resuming a countdown, set seconds to the number of seconds remaining
-    let seconds = 15;
+    let seconds = 60;
+    if (round.type==='D') {
+        seconds = 120;
+    }
+    
     if (secondsRemaining !== null) {
         seconds = secondsRemaining;
     }
@@ -20,14 +24,6 @@ export const GameHeader = ({ handleCountdownComplete, handleCountdownTick }) => 
 
     return ( 
         <div className="gameHeader">
-            {/* {isHost && timerState === 'stopped' && (
-                <img 
-                    src={start}
-                    alt={'Start'} 
-                    onClick={() => handleStartClick()}
-                    className="timerControl startBtn" 
-                />
-            )}     */}
             {isHost && timerState === 'started' && (
                 <img 
                     src={pause}

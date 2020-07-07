@@ -35,7 +35,7 @@ nav .navLeft {
 
 nav .playerName, nav .roomCode {
     display: inline-block;
-    margin-right: 2em;
+    margin-right: 1em;
     font-size: 1.5em;
 }
 
@@ -91,7 +91,6 @@ nav .link:hover {
     border-bottom: 0;
     border-right:0;
     min-width: 0;
-    max-width: 25%;
     padding: 2px;
     position: relative;
 }

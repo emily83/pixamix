@@ -35,7 +35,10 @@ export default (state, action) => {
                 error: null,
                 message: null,
                 blockerMsg: null,
-                showResumeBtn: false
+                showResumeBtn: false,
+                completedCards: [],
+                revealCardNo: null,
+                revealRoundNo: null
             }
         case 'SET_PLAYER':
             return {
@@ -160,7 +163,10 @@ export default (state, action) => {
                     timerState: 'stopped',
                     blockerMsg: null,
                     secondsRemaining: null,
-                    canvasData: null
+                    canvasData: null,
+                    completedCards: [],
+                    revealCardNo: null,
+                    revealRoundNo: null
                 }
             } else {
                 return state;
@@ -169,7 +175,15 @@ export default (state, action) => {
         case 'SET_ROUND':           
             return {
                 ...state,
-                round: action.payload
+                round: action.payload,
+                secondsRemaining: null,
+                canvasData: null,
+            }  
+
+        case 'COMPLETE_ROUND':           
+            return {
+                ...state,
+                round: { ...state.round, complete: true } 
             }  
 
         case 'PLAYER_SUBMITTED':
@@ -239,6 +253,19 @@ export default (state, action) => {
                 ...state,
                 message: action.payload
             }
+
+        case 'SET_CARDS':           
+            return {
+                ...state,
+                completedCards: action.payload
+            }  
+
+        case 'SET_REVEAL':           
+            return {
+                ...state,
+                revealCardNo: action.payload.cardNo,
+                revealRoundNo: action.payload.roundNo,
+            }  
 
         default:
             return state;

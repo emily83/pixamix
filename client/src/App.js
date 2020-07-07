@@ -26,7 +26,8 @@ function App() {
     playerSubmitted,
     playerReady,
     resetReady,
-    round
+    round,
+    setReveal
    } = useContext(GlobalContext);
 
   useEffect(() => {
@@ -42,6 +43,23 @@ function App() {
           setStatus('joiningRoom');
         }
       }
+
+      window.addEventListener('online', (event) => {
+        console.log("You are now online");
+        reactivatePlayer(roomCode, playerID);  
+        if (isHost) {
+            stopTimer('You have re-connected', true);
+        } else {
+            stopTimer('You have re-connected \n Waiting for host to restart game', false);
+        }
+      });
+
+      window.addEventListener('offline', (event) => {
+          console.log("You are now offline");
+          deactivatePlayer(roomCode, playerID);   
+          stopTimer('You are offline \n Game paused');
+      });
+
       // eslint-disable-next-line
   }, []);
 
@@ -118,6 +136,12 @@ function App() {
             console.log(`round submitted by all in room ${room}`); 
             getNextRound();
         });
+
+        socket.on('reveal', ({ cardNo, roundNo }) => {
+          console.log(`reveal card ${cardNo} round ${roundNo}`); 
+          setReveal(cardNo, roundNo);
+      });
+
     }
     // eslint-disable-next-line
   }, [socket, playerID, gameID, round]);

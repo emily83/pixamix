@@ -3,7 +3,7 @@ import { GlobalContext } from '../../context/GlobalState';
 import { trackPromise } from 'react-promise-tracker';
 
 export const Nav = () => {
-    const { player, roomCode, leaveRoom, endGame, isHost, status } = useContext(GlobalContext);
+    const { player, leaveRoom, endGame, isHost, status } = useContext(GlobalContext);
 
     function handleEndGameClick(e) {
         e.preventDefault();
@@ -31,7 +31,7 @@ export const Nav = () => {
         <nav>
             <div className="navLeft">
                 <div className="playerName">Player: <span>{ player.name }</span></div>
-                <div className="roomCode">Room: <span>{ roomCode }</span></div>
+                {/* <div className="roomCode">Room: <span>{ roomCode }</span></div> */}
 
                 {isHost && (status === 'playing' || status === 'reveal') && (
                     <button className="link" onClick={handleEndGameClick}>End Game</button>  

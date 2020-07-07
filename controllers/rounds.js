@@ -141,7 +141,6 @@ exports.getRound = async (req, res, next) => {
         const prevRound = card.rounds.find(r => r.number == prevRoundNo);
 
         if (!prevRound) {
-            console.log(`Previous round not found ${prevRoundNo}`);
             return res.status(404).json({
                 success: false,
                 error: 'Previous round not found'
@@ -152,7 +151,7 @@ exports.getRound = async (req, res, next) => {
             number: roundNo,
             cardNumber: cardNo
         }
-        
+
         if (prevRound.type === 'D') {
             round.type = 'G';
             round.canvasData = prevRound.canvasData;

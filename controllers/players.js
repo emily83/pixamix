@@ -19,7 +19,7 @@ exports.addPlayerToRoom = async (req, res, next) => {
             });
         }
 
-        if (room.status === 'playing') {
+        if (room.status === 'playing'|| room.status === 'reveal') {
             return res.status(404).json({
                 success: false,
                 error: 'Game in progress'
@@ -147,15 +147,16 @@ exports.getRoomPlayer = async (req, res, next) => {
 
         //get current game
         if (room.games.length) {
-   
+
             const game = room.games[room.games.length - 1];
             data.gameID = game._id;
-
-            // Get player ID from parameters
-            const playerID = req.params.id;
-            //console.log(playerID);
-            //console.log(game.cards);
             
+            if (room.status === 'playing') {
+                // if playing get round data for player
+
+                            // Get player ID from parameters
+            const playerID = req.params.id;
+
             // Get player's game card from game object
             const playerCard = game.cards.find(c => c.playerID == playerID);
             if (playerCard) {
@@ -202,6 +203,11 @@ exports.getRoomPlayer = async (req, res, next) => {
                         }
                     }
                 }
+            }
+                
+            } else if (room.status === 'reveal') {
+                // if revealing get all cards
+                data.cards = game.cards;
             }
 
         } else {

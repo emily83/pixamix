@@ -161,6 +161,13 @@ module.exports = function(server) {
             }
   
         });
+
+        socket.on('reveal', async ({ room, cardNo, roundNo }) => {
+            console.log(`reveal card ${cardNo} round ${roundNo} in room ${room}`);  
+    
+            // Send broadcast to room to let them know what is currently being revealed
+            socket.broadcast.to(room).emit('reveal', { cardNo, roundNo });
+        });
     
     });
 };
