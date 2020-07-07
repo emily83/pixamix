@@ -22,7 +22,7 @@ export const Player = ({ player, number }) => {
             </span>
             <span className="name">{player.name}</span>
             
-            {isHost && player._id !== playerID && status !== 'playing' && (
+            {isHost && player._id !== playerID && status !== 'playing' && status !== 'reveal' && (
                 <button 
                     className="remove-btn"
                     onClick={() => handleClick()}
