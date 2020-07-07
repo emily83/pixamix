@@ -8,9 +8,9 @@ export const GameHeader = ({ handleCountdownComplete, handleCountdownTick }) => 
     const { timerState, stopTimer, isHost, socket, roomCode, secondsRemaining, round } = useContext(GlobalContext);
 
     //if resuming a countdown, set seconds to the number of seconds remaining
-    let seconds = 60;
+    let seconds = 30;
     if (round.type==='D') {
-        seconds = 120;
+        seconds = 90;
     }
     
     if (secondsRemaining !== null) {
