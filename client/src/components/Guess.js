@@ -60,16 +60,7 @@ export const Guess = () => {
         <div className="game" ref={gameRef}>
             <GameHeader handleCountdownComplete={handleCountdownComplete} />
             <div className="gameHeader2">
-                <form onSubmit={onSubmit} className={formSubmitted ? 'hide' : ''}>
-                    <input 
-                        type="text" 
-                        className="guessInput" 
-                        value={guess} 
-                        onChange={(e) => setGuess(e.target.value)} 
-                        onKeyDown={onKeyDown}  
-                    />
-                    <button className="btn guessSubmitBtn">Submit</button>
-                </form>
+
             </div>
             <CanvasDraw          
                 ref={canvasRef}
@@ -81,6 +72,16 @@ export const Guess = () => {
                 saveData={round.canvasData}
                 immediateLoading={true}
             />  
+            <form onSubmit={onSubmit} className={`controls ${formSubmitted ? 'hide' : ''}`}>
+                <input 
+                    type="text" 
+                    className="guessInput" 
+                    value={guess} 
+                    onChange={(e) => setGuess(e.target.value)} 
+                    onKeyDown={onKeyDown}  
+                />
+                <button className="btn roundSubmitBtn">Submit</button>
+            </form>
             {blockerMsg !== null && (
                 <Blocker />
             )}          

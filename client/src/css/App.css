@@ -26,6 +26,12 @@ body, #root {
     font-size: 22px;
   }
 }
+@media screen and (min-width: 1200px) {
+  .app {   
+    border-left: 1px solid #bcbcbc;
+    border-right: 1px solid #bcbcbc;
+  }
+}
 
 .app {
     height: 100%;
@@ -33,9 +39,6 @@ body, #root {
     width: 100%;
     max-width: 1200px;
     background-color: white;
-    border-left: 1px solid #bcbcbc;
-    border-right: 1px solid #bcbcbc;
-    
     /* Prevent nearby text being highlighted when accidentally dragging mouse outside confines of the canvas */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -50,7 +53,7 @@ body, #root {
   flex-direction: column;
   align-items: center;
   padding: 0 2vw;
-  height: calc(100% - 6.4em);
+  height: calc(100% - 6.6em);
   position: relative;
 }
 
@@ -127,4 +130,22 @@ p.roomLink {
   color: var(--primary-colour);
   font-weight: bold;
   user-select: all;
+}
+
+
+.react-confirm-alert-body {
+    font-family: "Century Gothic", CenturyGothic, Geneva, AppleGothic, sans-serif;
+    width: 80vw !important;
+    max-width: 400px;
+
+}
+
+.react-confirm-alert-body h1 {
+  font-size: 1.5em;
+  color: var(--primary-colour) !important;
+}
+
+.react-confirm-alert-button-group > button {
+  font-size: 1em !important;
+  background-color: var(--primary-colour) !important;
 }
