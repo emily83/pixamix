@@ -1,8 +1,8 @@
 .blocker {
   position: absolute;
-  top: 2.4em;
+  top: 2.1em;
   width: 100%;
-  height: calc(100% - 2.49em);
+  height: calc(100% - 2.1em);
   background: white;
   opacity: 0.9;
   z-index: 100;

@@ -135,9 +135,10 @@ p.roomLink {
 
 .react-confirm-alert-body {
     font-family: "Century Gothic", CenturyGothic, Geneva, AppleGothic, sans-serif;
-    width: 80vw !important;
+    width: 75vw !important;
     max-width: 400px;
-
+    border: 1px solid #f3b7d1;
+    padding: 1em !important;
 }
 
 .react-confirm-alert-body h1 {
@@ -148,4 +149,8 @@ p.roomLink {
 .react-confirm-alert-button-group > button {
   font-size: 1em !important;
   background-color: var(--primary-colour) !important;
+}
+
+.react-confirm-alert-button-group > button:last-child {
+  margin-right: 0;
 }

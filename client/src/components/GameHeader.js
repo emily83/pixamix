@@ -5,7 +5,7 @@ import { Timer } from './Timer';
 import pause from '../images/pause.png';
 
 export const GameHeader = ({ handleCountdownComplete, handleCountdownTick }) => {
-    const { timerState, stopTimer, isHost, socket, roomCode, secondsRemaining, round } = useContext(GlobalContext);
+    const { timerState, stopTimer, secondsRemaining, round } = useContext(GlobalContext);
 
     //if resuming a countdown, set seconds to the number of seconds remaining
     let seconds = 30;
@@ -18,13 +18,13 @@ export const GameHeader = ({ handleCountdownComplete, handleCountdownTick }) => 
     }
  
     function handlePauseClick() {
-        stopTimer('You have paused the game', true);
-        socket.emit('stopTimer', { room: roomCode });
+        stopTimer('Game Paused', true);
+        //socket.emit('stopTimer', { room: roomCode });
     }
 
     return ( 
         <div className="gameHeader">
-            {isHost && timerState === 'started' && (
+            {timerState === 'started' && (
                 <img 
                     src={pause}
                     alt={'Pause'} 

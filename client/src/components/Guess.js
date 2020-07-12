@@ -23,7 +23,7 @@ export const Guess = () => {
                 width: gameRef.current.offsetWidth - 2,
                 height: gameRef.current.offsetHeight - 2
             });
-          }
+        }
     }, []);
 
     const handleCountdownComplete = () => {
@@ -60,7 +60,7 @@ export const Guess = () => {
         <div className="game" ref={gameRef}>
             <GameHeader handleCountdownComplete={handleCountdownComplete} />
             <div className="gameHeader2">
-
+                Can you tell what it is?
             </div>
             <CanvasDraw          
                 ref={canvasRef}
@@ -76,11 +76,12 @@ export const Guess = () => {
                 <input 
                     type="text" 
                     className="guessInput" 
+                    placeholder="Enter your guess here"
                     value={guess} 
                     onChange={(e) => setGuess(e.target.value)} 
                     onKeyDown={onKeyDown}  
                 />
-                <button className="btn roundSubmitBtn">Submit</button>
+                <button className="btn roundSubmitBtn guessSubmitBtn">Submit</button>
             </form>
             {blockerMsg !== null && (
                 <Blocker />

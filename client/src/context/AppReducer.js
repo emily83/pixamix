@@ -183,7 +183,9 @@ export default (state, action) => {
         case 'COMPLETE_ROUND':           
             return {
                 ...state,
-                round: { ...state.round, complete: true } 
+                round: { ...state.round, complete: true }
+                // secondsRemaining: null,
+                // canvasData: null,
             }  
 
         case 'PLAYER_SUBMITTED':

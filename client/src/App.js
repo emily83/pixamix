@@ -11,7 +11,6 @@ function App() {
     socket, 
     roomCode, 
     playerID, 
-    isHost,
     addPlayer, 
     removePlayer, 
     deactivatePlayer, 
@@ -22,6 +21,7 @@ function App() {
     clearGame,
     startTimer,
     stopTimer,
+    sendRoundData,
     getNextRound,
     playerSubmitted,
     playerReady,
@@ -46,18 +46,28 @@ function App() {
 
       window.addEventListener('online', (event) => {
         console.log("You are now online");
+
         reactivatePlayer(roomCode, playerID);  
-        if (isHost) {
-            stopTimer('You have re-connected', true);
-        } else {
-            stopTimer('You have re-connected \n Waiting for host to restart game', false);
+
+        if (localStorage.getItem('roundData')) {
+          const roundData = JSON.parse(localStorage.getItem('roundData'));
+          const roundURL = localStorage.getItem('roundURL');
+          console.log(roundData);
+          console.log(roundURL);
+          sendRoundData(roundData, roundURL);
         }
+
+        // if (isHost) {
+        //     stopTimer('You have re-connected', true);
+        // } else {
+        //     stopTimer('You have re-connected \n Waiting for host to restart game', false);
+        // }
       });
 
       window.addEventListener('offline', (event) => {
           console.log("You are now offline");
           deactivatePlayer(roomCode, playerID);   
-          stopTimer('You are offline \n Game paused');
+          //stopTimer('You are offline \n Game paused');
       });
 
       // eslint-disable-next-line
@@ -82,15 +92,15 @@ function App() {
         socket.on('deactivatePlayer', ({ room, playerID }) => {
             console.log(`deactivate player ${playerID} in room ${room}`);
             deactivatePlayer(room, playerID);   
-            stopTimer('Game paused due to player disconnecting');
+            // stopTimer('Game paused due to player disconnecting');
         });
 
         socket.on('reactivatePlayer', ({ room, playerID }) => {
             console.log(`reactivate player ${playerID} in room ${room}`);
             reactivatePlayer(room, playerID);   
-            if (isHost) {
-              stopTimer('Player re-connected', true);
-            }
+            // if (isHost) {
+            //   stopTimer('Player re-connected', true);
+            // }
         });
 
         socket.on('gameStarting', ({ room, gameID }) => {

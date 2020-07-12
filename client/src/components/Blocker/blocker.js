@@ -4,11 +4,11 @@ import "./blocker.css";
 
 export const Blocker = () => {
 
-    const { blockerMsg, showResumeBtn, startTimer, roomCode, socket } = useContext(GlobalContext);
+    const { blockerMsg, showResumeBtn, startTimer } = useContext(GlobalContext);
 
     function handleStartClick() {
         startTimer();
-        socket.emit('startTimer', { room: roomCode });
+        //socket.emit('startTimer', { room: roomCode });
     }
 
     return (

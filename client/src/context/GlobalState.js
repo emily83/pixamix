@@ -1,8 +1,11 @@
 import React, { createContext, useReducer } from 'react';
 import AppReducer from './AppReducer';
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import io from "socket.io-client";
 import Cookies from 'js-cookie';
+
+axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay});
 
 let socketURL = '';
 if (process.env.NODE_ENV === 'development') {
@@ -51,7 +54,6 @@ export const GlobalProvider = ({ children }) => {
 
     // Actions
     async function getRoomPlayer() {   
-
         setStatus('checkingStatus');
 
         try {
@@ -102,11 +104,13 @@ export const GlobalProvider = ({ children }) => {
                         }
                     });    
     
-                    if (player.isHost) {
-                        stopTimer('You have re-connected', true);
-                    } else {
-                        stopTimer('Waiting for host to restart game', false);
-                    }
+                    // if (player.isHost) {
+                    //     stopTimer('You have re-connected', true);
+                    // } else {
+                    //     stopTimer('Waiting for host to restart game', false);
+                    // }
+
+                    stopTimer('Game Paused', true);
 
                 } else if (data.status === 'reveal') {
                        console.log(data.cards);
@@ -138,8 +142,8 @@ export const GlobalProvider = ({ children }) => {
         Cookies.remove('roomCode');  
         Cookies.remove('playerID');
         Cookies.remove('timerState');
-        Cookies.remove('secondsRemaining');
-        Cookies.remove('canvasData');
+        Cookies.remove('secondsRemaining');     
+        localStorage.removeItem("canvasData");
         Cookies.remove('blockerMsg');
         Cookies.remove('revealCardNo');  
         Cookies.remove('revealRoundNo');  
@@ -344,7 +348,7 @@ export const GlobalProvider = ({ children }) => {
     
             Cookies.remove('timerState');
             Cookies.remove('secondsRemaining');
-            Cookies.remove('canvasData');
+            localStorage.removeItem("canvasData");
             Cookies.remove('blockerMsg');
 
             //emit message to start game
@@ -399,7 +403,7 @@ export const GlobalProvider = ({ children }) => {
 
         Cookies.remove('timerState');
         Cookies.remove('secondsRemaining');
-        Cookies.remove('canvasData');
+        localStorage.removeItem("canvasData");
         Cookies.remove('blockerMsg');
         Cookies.remove('revealCardNo');  
         Cookies.remove('revealRoundNo');  
@@ -418,7 +422,7 @@ export const GlobalProvider = ({ children }) => {
     
             Cookies.remove('timerState');
             Cookies.remove('secondsRemaining');
-            Cookies.remove('canvasData');
+            localStorage.removeItem("canvasData");
             Cookies.remove('blockerMsg');
 
             dispatch({
@@ -466,7 +470,7 @@ export const GlobalProvider = ({ children }) => {
         });
     }
     async function submitRound(data) {
-
+console.log(data);
         dispatch({
             type: 'COMPLETE_ROUND',
             payload: null
@@ -483,15 +487,29 @@ export const GlobalProvider = ({ children }) => {
             roundData.word = data.word;
         }
 
+        const roundURL = `/api/v1/rooms/${state.roomCode}/games/${state.gameID}/cards/${state.round.cardNumber}/rounds`;
+ 
+        if (navigator.onLine) {
+            console.log('online');
+            sendRoundData(roundData, roundURL);
+        } else {
+            console.log('offline');
+            // if offline, save round data to local storage and wait to come back online
+            localStorage.setItem('roundData', JSON.stringify(roundData));
+            localStorage.setItem('roundURL',roundURL);
+        }
+        
+    }
+
+    async function sendRoundData(roundData, roundURL) {
+
         try {        
-            await axios.post(
-                `/api/v1/rooms/${state.roomCode}/games/${state.gameID}/cards/${state.round.cardNumber}/rounds`, 
-                roundData,
-                config
-            );
+            await axios.post(roundURL, roundData, config);
 
             const numPlayers = state.allPlayers.length;
-            const roundNo = parseInt(state.round.number)
+            console.log(numPlayers);
+            
+            const roundNo = parseInt(roundData.number)
             if (roundNo === numPlayers) {
                 stopTimer('Game Over! \n Waiting for all players to finish');
             } else {
@@ -501,18 +519,28 @@ export const GlobalProvider = ({ children }) => {
             //set self as submitted
             playerSubmitted(state.roomCode, state.playerID);
 
+            // remove data from local storage
+            localStorage.removeItem('roundData');
+            localStorage.removeItem('roundURL');
+
+            Cookies.remove('secondsRemaining');
+            localStorage.removeItem("canvasData");
+
             //emit message to tell server round submitted
             state.socket.emit('roundSubmitted', { room: state.roomCode, playerID: state.playerID });
 
-        } catch (err) {
+        } catch (err) {      
+            if (err.response) {                          
+                dispatch({
+                    type: 'ROOM_ERROR',
+                    payload: err.response.data.error
+                });
+                return false;
+            } else {
+                console.log(err);
                 
-            dispatch({
-                type: 'ROOM_ERROR',
-                payload: err.response.data.error
-            });
-            return false;
+            }
         }
-
     }
 
     function playerSubmitted(room, playerID) {
@@ -660,6 +688,7 @@ export const GlobalProvider = ({ children }) => {
             startTimer,
             stopTimer,
             submitRound,
+            sendRoundData,
             playerSubmitted,
             playerReady,
             resetReady,

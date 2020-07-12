@@ -7,7 +7,6 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { useBeforeunload } from 'react-beforeunload';
 import { Blocker } from './Blocker';
-import Cookies from 'js-cookie';
 import '../css/Game.css';
 import pencil from '../images/pencil.png'; 
 import rubber from '../images/rubber.png';
@@ -118,23 +117,38 @@ export const Sketchpad = () => {
           }); 
     }
 
-    const handleCountdownComplete = () => {
-        // Cookies.remove('secondsRemaining');
-        // Cookies.remove('canvasData');
-        // stopTimer('Time\'s Up! \n\n Sending drawing to next player...', false);
-        // const canvasData = canvasRef.current.getSaveData();
-        // canvasRef.current.clear();
-        // setTimeout(() => {
-        //     trackPromise(
-        //         submitRound({canvasData})
-        //     ); 
-        // }, 2000);       
+    const handleCountdownComplete = () => {     
+        stopTimer('Time\'s Up! \n\n Sending drawing to next player...', false);
+        submitForm(); 
+    }
+
+    const onSubmit = async e => {
+        e.preventDefault();
+
+        confirmAlert({
+            title: 'Submit Drawing',
+            message: 'Do you want to submit your drawing?',
+            buttons: [
+                {
+                    label: 'No'
+                },
+                {
+                    label: 'Yes',
+                    onClick: () => {
+                        stopTimer('Round submitted! \n\n Sending drawing to next player...', false);
+                        submitForm(); 
+                    }
+                },
+
+            ]
+          });  
     }
 
     function submitForm() {
-        const canvasData = canvasRef.current.getSaveData();
+        const newCanvasData = canvasRef.current.getSaveData();
+
         trackPromise(
-            submitRound({canvasData})
+            submitRound({canvasData : newCanvasData})
         ); 
     }
 
@@ -166,9 +180,9 @@ export const Sketchpad = () => {
                 immediateLoading={true}
                 className={"brush" + brushType}
             />  
-            <form className="controls">
+            <form className="controls" onSubmit={onSubmit}>
                 <img src={pencil} alt="pencil" onClick={handlePenClick} className={`control ${penThickness} ${brushType==='P' ? 'selected' : ''}`} />
-                <div className={`penSelection brushSelection ${showPenSelection ? '' : 'hide'}`} onBlur={() => console.log('on blur')}>
+                <div className={`penSelection brushSelection ${showPenSelection ? '' : 'hide'}`}>
                     {
                         Object.keys(penThicknesses).map(t => (
                             <img key={t}
