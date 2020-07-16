@@ -92,9 +92,9 @@ export const GlobalProvider = ({ children }) => {
             }); 
 
             if (data.gameID) {
-                
+                console.log(`status: ${data.status}`);
                 if (data.status === 'playing') {
-
+                    console.log('set game');
                     dispatch({
                         type: 'SET_GAME',
                         payload: {
@@ -104,18 +104,40 @@ export const GlobalProvider = ({ children }) => {
                         }
                     });    
 
-                    stopTimer('Game Paused', true);
+                    // If player has complete round already show blocker
+                    if (data.round.complete) {
+                        const roundNo = parseInt(data.round.number)
+                        const numPlayers = data.players.length;
+
+                        if (roundNo === numPlayers) {
+                            stopTimer('Game Over! \n Waiting for all players to finish');
+                        } else {
+                            stopTimer('Waiting for all players to be ready');
+                        }
+
+                         //set self as submitted
+                        playerSubmitted(state.roomCode, state.playerID);
+
+                    } else {
+                        stopTimer('Game Paused', true);
+                    }       
 
                     //if there is round data in local storage then send it now
                     if (localStorage.getItem('roundData')) {
+                        console.log('local round data found');
                         const roundData = JSON.parse(localStorage.getItem('roundData'));
                         const roundURL = localStorage.getItem('roundURL');
+
+                        dispatch({
+                            type: 'COMPLETE_ROUND',
+                            payload: null
+                        });
+                        console.log(`complete ${state.round.complete}`);
                         sendRoundData(roundData, roundURL);
                       }
 
                 } else if (data.status === 'reveal') {
-                       console.log(data.cards);
-                       
+ 
                     dispatch({
                         type: 'SET_CARDS',
                         payload: data.cards
@@ -402,6 +424,8 @@ export const GlobalProvider = ({ children }) => {
             payload: msg
         });
 
+        resetReady();
+
         Cookies.remove('timerState');
         Cookies.remove('secondsRemaining');
         localStorage.removeItem("canvasData");
@@ -508,8 +532,7 @@ export const GlobalProvider = ({ children }) => {
             await axios.post(roundURL, roundData, config);
 
             const numPlayers = state.allPlayers.length;
-            console.log(numPlayers);
-            
+
             const roundNo = parseInt(roundData.number)
             if (roundNo === numPlayers) {
                 stopTimer('Game Over! \n Waiting for all players to finish');
@@ -567,7 +590,13 @@ export const GlobalProvider = ({ children }) => {
     }
 
     async function getNextRound() {
-        
+        //if round is not complete we have already retrieved next round when getting as part of getRoomPlayer
+        if (!state.round.complete) {
+             //emit message to tell server ready to go
+             state.socket.emit('ready', { room: state.roomCode, playerID: state.playerID });
+            return false;
+        }
+
         const numPlayers = state.allPlayers.length;
         const roundNo = parseInt(state.round.number)
         if (roundNo === numPlayers) {
@@ -581,11 +610,13 @@ export const GlobalProvider = ({ children }) => {
         if (nextCardNo < 1) {
             nextCardNo = nextCardNo + numPlayers;
         }
-        console.log('cardNo: ' + nextCardNo);
         
         try {
             const res = await axios.get(`/api/v1/rooms/${state.roomCode}/games/${state.gameID}/cards/${nextCardNo}/rounds/${nextRoundNo}`);
             const round = res.data.data;
+
+            Cookies.remove('secondsRemaining');
+            localStorage.removeItem("canvasData");
 
             dispatch({
                 type: 'SET_ROUND',

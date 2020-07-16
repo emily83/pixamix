@@ -104,10 +104,10 @@ function App() {
         socket.on('startTimer', ({ room, init }) => {
             console.log(`start timer in room ${room}, ${init}`); 
             if (init) {
-                setTimeout(() => {
+               // setTimeout(() => {
                   startTimer();
                   resetReady();
-                }, 1000);
+               // }, 1000);
             } else {
               startTimer();
             }          

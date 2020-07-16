@@ -154,37 +154,31 @@ exports.getRoomPlayer = async (req, res, next) => {
             if (room.status === 'playing') {
                 // if playing get round data for player
 
-                            // Get player ID from parameters
-            const playerID = req.params.id;
+                // Get player ID from parameters
+                const playerID = req.params.id;
 
-            // Get player's game card from game object
-            const playerCard = game.cards.find(c => c.playerID == playerID);
-            if (playerCard) {
+                // Get player's game card from game object
+                const playerCard = game.cards.find(c => c.playerID == playerID);
+                if (playerCard) {
 
-                data.playerCardNumber = playerCard.number;
+                    data.playerCardNumber = playerCard.number;
 
-                const roundNo = game.currentRound;
-                const numPlayers = room.players.length;
+                    const roundNo = game.currentRound;
+                    const numPlayers = room.players.length;
 
-                let cardNo = playerCard.number - roundNo + 1;
-                if (cardNo < 1) {
-                    cardNo = cardNo + numPlayers;
-                }
+                    let cardNo = playerCard.number - roundNo + 1;
+                    if (cardNo < 1) {
+                        cardNo = cardNo + numPlayers;
+                    }
 
-                data.round = {
-                    number: roundNo,
-                    cardNumber: cardNo
-                }
-                //console.log(data.round);
-                
+                    data.round = {
+                        number: roundNo,
+                        cardNumber: cardNo
+                    }
 
-                //check to see if this player has submitted the round
-                const card = game.cards.find(c => c.number === cardNo);
-                const round = card.rounds.find(r => r.number === roundNo);
-                if (round) {
-                    data.round.complete = true;
-                } else {
-                    data.round.complete = false;
+                    //check to see if this player has submitted the round
+                    const card = game.cards.find(c => c.number === cardNo);
+                    const round = card.rounds.find(r => r.number === roundNo);
 
                     //get prev round data
                     if (roundNo === 1) {
@@ -202,8 +196,15 @@ exports.getRoomPlayer = async (req, res, next) => {
                             data.round.word = prevRound.word;
                         }
                     }
+
+                    // Check if player has completed and submitted this round
+                    if (round) {
+                        data.round.complete = true;
+                    } else {
+                        data.round.complete = false;
+                    }
+                    
                 }
-            }
                 
             } else if (room.status === 'reveal') {
                 // if revealing get all cards

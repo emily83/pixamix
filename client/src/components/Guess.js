@@ -7,7 +7,7 @@ import { Blocker } from './Blocker';
 import '../css/Game.css';
 
 export const Guess = () => {
-    const { round, blockerMsg, setError, submitRound } = useContext(GlobalContext);
+    const { round, blockerMsg, setError, submitRound, stopTimer } = useContext(GlobalContext);
 
     const gameRef = useRef();
     const canvasRef = useRef();
@@ -50,7 +50,7 @@ export const Guess = () => {
         }
         setError(null);
         setFormSubmitted(true);
-
+        stopTimer('Round submitted! \n\n Sending guess to next player...', false);
         trackPromise(
             submitRound({word: guess})
         ); 

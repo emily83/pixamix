@@ -10,7 +10,8 @@ module.exports = function(server) {
         console.log("New client connected "  + socket.id);
     
         socket.on('joinRoom', ({ room, player }) => {
-  
+            console.log(`${player.name} joining ${room}`);
+
             // Add client to socket room
             socket.join(room);
 
@@ -27,7 +28,7 @@ module.exports = function(server) {
         });
     
         socket.on('rejoinRoom', async ({ room, player }) => {
-            console.log(`${player.name} rejoin ${room}`);
+            console.log(`${player.name} rejoining ${room}`);
 
             const playerID = player._id;
 
@@ -39,11 +40,19 @@ module.exports = function(server) {
             if (rooms[room]['players'][playerID]) {
                 rooms[room]['players'][playerID]['socketID'] = socket.id;
 
+                // If all players have submitted tell player that has just rejoined
                 if (checkAllSubmitted(room)) {
-
-                    // Tell user that has just rejoined that round data has been submitted by all players
                     socket.emit('roundSubmittedByAll', { room });
 
+                // Otherwise tell player who whas submitted
+                } else {
+                    for (const pID in rooms[room]['players']) {
+                        if (rooms[room]['players'].hasOwnProperty(pID)) { 
+                            if (rooms[room]['players'][pID]['submitted']) {
+                                socket.emit('playerSubmitted', { room, playerID: pID });
+                            }
+                        }
+                    }
                 }
 
                 //If revealing, send back card and round we are currently on
@@ -76,14 +85,12 @@ module.exports = function(server) {
     
             // Tell room player is inactive
             if (playerID) {
-                //console.log(playerID);
-                
                 socket.broadcast.to(room).emit('deactivatePlayer', { room, playerID });
             }
         });
     
         socket.on('leaveRoom', async ({ room, playerID }) => {
-            //console.log(`player ${playerID} leaving ${room}`);  
+            console.log(`player ${playerID} leaving ${room}`);  
     
             delete rooms[room]['players'][playerID];
             if (Object.keys(rooms[room]['players']).length === 0) {
@@ -99,7 +106,7 @@ module.exports = function(server) {
         });
     
         socket.on('removePlayer', async ({ room, playerID }) => {
-            //console.log(`remove player ${playerID} from ${room}`);  
+            console.log(`remove player ${playerID} from ${room}`);  
     
             delete rooms[room]['players'][playerID];
 
@@ -154,8 +161,7 @@ module.exports = function(server) {
         
             if (rooms[room]['players'][playerID]) {
                 rooms[room]['players'][playerID]['ready'] = true;
-                console.log(rooms);
-    
+
                 if (checkAllReady(room)) {
                     console.log('lets go!');  
                     
@@ -243,7 +249,6 @@ module.exports = function(server) {
                 ready: false,
                 submitted: false
             }
-            console.log(rooms);
         }
 
         function checkAllReady(room) {
