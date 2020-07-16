@@ -9,7 +9,8 @@ function App() {
   const { 
     getRoomPlayer, 
     socket, 
-    roomCode, 
+    roomCode,
+    player, 
     playerID, 
     addPlayer, 
     removePlayer, 
@@ -18,6 +19,7 @@ function App() {
     setStatus, 
     initGame, 
     gameID, 
+    clearRoom,
     clearGame,
     startTimer,
     stopTimer,
@@ -44,38 +46,14 @@ function App() {
         }
       }
 
-      window.addEventListener('online', (event) => {
-        console.log("You are now online");
-
-        reactivatePlayer(roomCode, playerID);  
-
-        if (localStorage.getItem('roundData')) {
-          const roundData = JSON.parse(localStorage.getItem('roundData'));
-          const roundURL = localStorage.getItem('roundURL');
-          console.log(roundData);
-          console.log(roundURL);
-          sendRoundData(roundData, roundURL);
-        }
-
-        // if (isHost) {
-        //     stopTimer('You have re-connected', true);
-        // } else {
-        //     stopTimer('You have re-connected \n Waiting for host to restart game', false);
-        // }
-      });
-
-      window.addEventListener('offline', (event) => {
-          console.log("You are now offline");
-          deactivatePlayer(roomCode, playerID);   
-          //stopTimer('You are offline \n Game paused');
-      });
-
       // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
 
     if (socket !== null) {
+      console.log('create socket listeners');
+      console.log(roomCode);
 
         socket.removeAllListeners();
 
@@ -101,6 +79,14 @@ function App() {
             // if (isHost) {
             //   stopTimer('Player re-connected', true);
             // }
+        });
+
+        socket.on('reconnect', (attemptNumber) => {
+            console.log('reconnect to ' + roomCode);
+            if (roomCode !== '') {
+              //emit message to join room
+              socket.emit('rejoinRoom', { room: roomCode, player });
+            }
         });
 
         socket.on('gameStarting', ({ room, gameID }) => {
@@ -150,11 +136,43 @@ function App() {
         socket.on('reveal', ({ cardNo, roundNo }) => {
           console.log(`reveal card ${cardNo} round ${roundNo}`); 
           setReveal(cardNo, roundNo);
-      });
+        });
+
+        socket.on('roomNotFound', ({ room }) => {
+          console.log(`room ${room} not found`); 
+          clearRoom();
+        });
 
     }
+
+    
+    const onOnline = () => {
+      console.log("You are now online");
+
+      //reactivatePlayer(roomCode, playerID);  
+
+      if (localStorage.getItem('roundData')) {
+        const roundData = JSON.parse(localStorage.getItem('roundData'));
+        const roundURL = localStorage.getItem('roundURL');
+        sendRoundData(roundData, roundURL);
+      }
+    };
+
+    const onOffline = () => {
+      console.log("You are now offline");
+      deactivatePlayer(roomCode, playerID);   
+    }
+
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+
+    return function cleanupListener() {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    }
+
     // eslint-disable-next-line
-  }, [socket, playerID, gameID, round]);
+  }, [socket, roomCode, player, playerID, gameID, round]);
 
   return ( 
       <div className="app">

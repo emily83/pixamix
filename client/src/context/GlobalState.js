@@ -103,14 +103,15 @@ export const GlobalProvider = ({ children }) => {
                             round: data.round
                         }
                     });    
-    
-                    // if (player.isHost) {
-                    //     stopTimer('You have re-connected', true);
-                    // } else {
-                    //     stopTimer('Waiting for host to restart game', false);
-                    // }
 
                     stopTimer('Game Paused', true);
+
+                    //if there is round data in local storage then send it now
+                    if (localStorage.getItem('roundData')) {
+                        const roundData = JSON.parse(localStorage.getItem('roundData'));
+                        const roundURL = localStorage.getItem('roundURL');
+                        sendRoundData(roundData, roundURL);
+                      }
 
                 } else if (data.status === 'reveal') {
                        console.log(data.cards);
@@ -470,7 +471,7 @@ export const GlobalProvider = ({ children }) => {
         });
     }
     async function submitRound(data) {
-console.log(data);
+
         dispatch({
             type: 'COMPLETE_ROUND',
             payload: null
@@ -527,6 +528,7 @@ console.log(data);
             localStorage.removeItem("canvasData");
 
             //emit message to tell server round submitted
+            console.log('emit to socket round submitted');
             state.socket.emit('roundSubmitted', { room: state.roomCode, playerID: state.playerID });
 
         } catch (err) {      
@@ -537,8 +539,8 @@ console.log(data);
                 });
                 return false;
             } else {
-                console.log(err);
-                
+                console.log(err);           
+                setTimeout(() => sendRoundData(roundData, roundURL), 3000);
             }
         }
     }
@@ -617,6 +619,11 @@ console.log(data);
                 type: 'SET_CARDS',
                 payload: cards
             });
+
+            playerReady(state.roomCode, state.playerID);
+
+            //emit message to tell server ready to go
+            state.socket.emit('ready', { room: state.roomCode, playerID: state.playerID });
         
         } catch (err) {
             console.log(err);
