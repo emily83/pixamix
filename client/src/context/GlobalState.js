@@ -23,6 +23,7 @@ const initialState = {
     gamesPlayed: 0,
     gameID: null,
     playerCardNumber: null,
+    numRounds: null,
     round: {},
     timerState: 'stopped',
     secondsRemaining: Cookies.get('secondsRemaining') ? Cookies.get('secondsRemaining') : null,
@@ -107,9 +108,8 @@ export const GlobalProvider = ({ children }) => {
                     // If player has complete round already show blocker
                     if (data.round.complete) {
                         const roundNo = parseInt(data.round.number)
-                        const numPlayers = data.players.length;
 
-                        if (roundNo === numPlayers) {
+                        if (roundNo === state.numRounds) {
                             stopTimer('Game Over! \n Waiting for all players to finish');
                         } else {
                             stopTimer('Waiting for all players to be ready');
@@ -531,10 +531,8 @@ export const GlobalProvider = ({ children }) => {
         try {        
             await axios.post(roundURL, roundData, config);
 
-            const numPlayers = state.allPlayers.length;
-
             const roundNo = parseInt(roundData.number)
-            if (roundNo === numPlayers) {
+            if (roundNo === state.numRounds) {
                 stopTimer('Game Over! \n Waiting for all players to finish');
             } else {
                 stopTimer('Waiting for all players to be ready');
@@ -599,7 +597,7 @@ export const GlobalProvider = ({ children }) => {
 
         const numPlayers = state.allPlayers.length;
         const roundNo = parseInt(state.round.number)
-        if (roundNo === numPlayers) {
+        if (roundNo === state.numRounds) {
             getRevealData();
             resetReady();
             setStatus('reveal');
@@ -697,6 +695,7 @@ export const GlobalProvider = ({ children }) => {
             gamesPlayed: state.gamesPlayed,
             gameID: state.gameID,
             round: state.round,
+            numRounds: state.numRounds,
             timerState: state.timerState,
             secondsRemaining: state.secondsRemaining,
             canvasData: state.canvasData,

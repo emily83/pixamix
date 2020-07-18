@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 
 export const Reveal = () => {
 
-    const { completedCards, revealCardNo, revealRoundNo, reveal, allPlayers, isHost } = useContext(GlobalContext);
+    const { completedCards, revealCardNo, revealRoundNo, reveal, allPlayers, numRounds, isHost } = useContext(GlobalContext);
 
     const gameRef = useRef();
     const gameHeader2Ref = useRef();
@@ -35,9 +35,7 @@ export const Reveal = () => {
         // If word is really long and goes on to 2 lines then resize the font
 
         if (gameHeader2Ref.current && wordRef.current) {
-            if(wordRef.current.offsetHeight >= gameHeader2Ref.current.offsetHeight){
-                console.log(wordRef.current.offsetHeight);
-                console.log(wordRef.current.offsetHeight);
+            if(wordRef.current.offsetHeight >= gameHeader2Ref.current.offsetHeight){             
                 resize_to_fit();
             }
         }
@@ -113,7 +111,7 @@ export const Reveal = () => {
     }
     
     function nextRound() {
-        if (isHost && completedCards.length > revealRoundNo) {
+        if (isHost && numRounds > revealRoundNo) {
             reveal(revealCardNo, revealRoundNo + 1);
         }      
     }
@@ -158,7 +156,7 @@ export const Reveal = () => {
                         <button className="arrow up" onClick={() => prevRound()}></button>   
                     }
 
-                    { isHost && completedCards.length > revealRoundNo &&
+                    { isHost && numRounds > revealRoundNo &&
                         <button className="arrow down" onClick={() => nextRound()}></button>   
                     }
 

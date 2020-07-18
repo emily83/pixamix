@@ -28,6 +28,7 @@ module.exports = function(server) {
         });
     
         socket.on('rejoinRoom', async ({ room, player }) => {
+            if (!player) return false;
             console.log(`${player.name} rejoining ${room}`);
 
             const playerID = player._id;
