@@ -17,6 +17,8 @@ export const Sketchpad = () => {
 
     const gameRef = useRef();
     const canvasRef = useRef();
+    const gameHeader2Ref = useRef();
+    const wordRef = useRef();
 
     const penThicknesses = {
         'large' : 6,
@@ -45,8 +47,30 @@ export const Sketchpad = () => {
                 height: gameRef.current.offsetHeight - 2
             });
         }
-
     }, []);
+
+    useLayoutEffect(() => {
+
+        // If word is really long and goes on to 2 lines then resize the font
+
+        if (gameHeader2Ref.current && wordRef.current) {
+            if(wordRef.current.offsetHeight >= gameHeader2Ref.current.offsetHeight){
+                resize_to_fit();
+            }
+        }
+
+        function resize_to_fit(){
+            const style = getComputedStyle(wordRef.current);
+            const fontSize = parseFloat(style.fontSize);
+            const newFontSize = fontSize - 1;
+            wordRef.current.style.fontSize = newFontSize + 'px';
+
+            if(wordRef.current.offsetHeight >= gameHeader2Ref.current.offsetHeight){
+                resize_to_fit();
+            }
+        }
+
+    }, [round]);
 
     useBeforeunload(() => {
         if (canvasRef.current) {           
@@ -164,8 +188,8 @@ export const Sketchpad = () => {
     return (
         <div className="game" ref={gameRef} onMouseDown={handleGameAreaClick} onTouchStart={handleGameAreaClick}>
             <GameHeader handleCountdownComplete={handleCountdownComplete} handleCountdownTick={handleCountdownTick} />
-            <div className="gameHeader2">
-                <div className="word">{round.word}</div>
+            <div className="gameHeader2" ref={gameHeader2Ref}>
+                <div className="word" ref={wordRef}>{round.word}</div>
             </div>
             <CanvasDraw          
                 ref={canvasRef}

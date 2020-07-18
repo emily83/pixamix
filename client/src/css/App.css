@@ -3,6 +3,11 @@
   --secondary-colour: yellow;
 }
 
+@font-face {
+  font-family: 'CenturyGothic';
+  src: local('CenturyGothic'), url(../fonts/CenturyGothic.ttf) format('truetype');
+}
+
 html {
   font-size: 16px;
   font-family: "Century Gothic", CenturyGothic, Geneva, AppleGothic, sans-serif;
@@ -13,6 +18,10 @@ body, #root {
     margin: 0;
     background-color: #eee;
     height: 100%;
+}
+
+button, input {
+  font-family : inherit;
 }
 
 @media screen and (min-width: 320px) {

@@ -9,6 +9,8 @@ export const Reveal = () => {
     const { completedCards, revealCardNo, revealRoundNo, reveal, allPlayers, isHost } = useContext(GlobalContext);
 
     const gameRef = useRef();
+    const gameHeader2Ref = useRef();
+    const wordRef = useRef();
 
     const [canvasDimensions, setCanvasDimensions] = useState({ width: 400, height: 400});
     const [revealCardPlayerName, setRevealCardPlayerName] = useState('');
@@ -19,14 +21,39 @@ export const Reveal = () => {
     useLayoutEffect(() => {
         console.log(gameRef);
         if (gameRef.current) {
-            console.log(gameRef.current.offsetWidth);
-            
             setCanvasDimensions({
                 width: gameRef.current.offsetWidth - 2,
                 height: gameRef.current.offsetHeight - 2
             });
-          }
+
+          
+        }
     }, [completedCards, revealCardNo, revealRoundNo]);
+
+    useLayoutEffect(() => {
+
+        // If word is really long and goes on to 2 lines then resize the font
+
+        if (gameHeader2Ref.current && wordRef.current) {
+            if(wordRef.current.offsetHeight >= gameHeader2Ref.current.offsetHeight){
+                console.log(wordRef.current.offsetHeight);
+                console.log(wordRef.current.offsetHeight);
+                resize_to_fit();
+            }
+        }
+
+        function resize_to_fit(){
+            const style = getComputedStyle(wordRef.current);
+            const fontSize = parseFloat(style.fontSize);
+            const newFontSize = fontSize - 1;
+            wordRef.current.style.fontSize = newFontSize + 'px';
+
+            if(wordRef.current.offsetHeight >= gameHeader2Ref.current.offsetHeight){
+                resize_to_fit();
+            }
+        }
+
+    });
 
     useEffect(() => { 
         if (completedCards.length > 0) {
@@ -44,6 +71,7 @@ export const Reveal = () => {
     
                     const roundPlayer = allPlayers.find(p => p._id === revealRound.playerID);
                     setRoundPlayerName(roundPlayer.name);
+
                 }             
             }        
   
@@ -119,8 +147,8 @@ export const Reveal = () => {
                             <button className="arrow right" onClick={() => nextCard()}></button>
                         }
                     </div> 
-                    <div className="gameHeader2 reveal">
-                        <div className="secretWord">Secret Word: {secretWord}</div>
+                    <div className="gameHeader2 reveal" ref={gameHeader2Ref}>
+                        <div className="secretWord" ref={wordRef}><span>Secret Word:</span> {secretWord}</div>
                     </div>
                     <div className="gameHeader3">
                         Round {revealRoundNo} - {revealRound.type === 'D' ? 'Drawing' : 'Guess'} by {roundPlayerName}

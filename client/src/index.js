@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import { GlobalProvider } from './context/GlobalState';
 import { Spinner } from './components/Spinner';
+import './fonts/CenturyGothic.ttf'
 
 ReactDOM.render(
   <React.StrictMode>
