@@ -50,7 +50,14 @@ async function incrementRound(roomCode) {
     if (room) {
         const game = room.games[room.games.length - 1];
         if (game) {
-            if (game.currentRound === room.players.length) {
+
+            let numRounds = room.players.length;
+            // If number of players is odd then number of rounds is one less than number of players so finish on guess
+            if (numRounds > 1 && numRounds % 2 !== 0) {
+                numRounds--;
+            }
+
+            if (game.currentRound === numRounds) {
                 room.status = 'reveal';
             } else {
                 game.currentRound++;

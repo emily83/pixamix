@@ -94,6 +94,12 @@ export const GlobalProvider = ({ children }) => {
 
             if (data.gameID) {
                 console.log(`status: ${data.status}`);
+
+                dispatch({
+                    type: 'SET_NUM_ROUNDS',
+                    payload: null
+                });
+
                 if (data.status === 'playing') {
                     console.log('set game');
                     dispatch({
@@ -381,6 +387,10 @@ export const GlobalProvider = ({ children }) => {
                 type: 'INIT_GAME',
                 payload: { room: state.roomCode, gameID: game._id, card: playerCard }
             });
+            dispatch({
+                type: 'SET_NUM_ROUNDS',
+                payload: null
+            });
             
             stopTimer('Waiting for all players to be ready');
 
@@ -453,6 +463,10 @@ export const GlobalProvider = ({ children }) => {
             dispatch({
                 type: 'INIT_GAME',
                 payload: { room, gameID, card }
+            });
+            dispatch({
+                type: 'SET_NUM_ROUNDS',
+                payload: null
             });
             
             stopTimer('Waiting for all players to be ready');

@@ -9,21 +9,24 @@ export default (state, action) => {
                 gamesPlayed: action.payload.gamesPlayed ? action.payload.gamesPlayed : 0
             }
         case 'SET_GAME':         
+            return {
+                ...state,
+                gameID: action.payload.gameID,
+                playerCardNumber: action.payload.playerCardNumber,
+                round: action.payload.round
+            }  
 
+        case 'SET_NUM_ROUNDS':             
             let numRounds = state.allPlayers.length;
             // If number of players is odd then number of rounds is one less than number of players so finish on guess
             if (numRounds > 1 && numRounds % 2 !== 0) {
                 numRounds--;
             }
-
             return {
                 ...state,
-                gameID: action.payload.gameID,
-                playerCardNumber: action.payload.playerCardNumber,
-                round: action.payload.round,
                 numRounds
             }  
-               
+
         case 'CLEAR_ROOM':
             return {
                 ...state,
@@ -142,13 +145,6 @@ export default (state, action) => {
 
         case 'INIT_GAME':
             if (action.payload.room === '' || action.payload.room === state.roomCode) {
-
-                let numRounds = state.allPlayers.length;
-                // If number of players is odd then number of rounds is one less than number of players so finish on guess
-                if (numRounds > 1 && numRounds % 2 !== 0) {
-                    numRounds--;
-                }
-
                 return {
                     ...state,
                     status: 'playing',
@@ -161,7 +157,6 @@ export default (state, action) => {
                         type: 'D',
                         word: action.payload.card.secretWord
                     },
-                    numRounds,
                     message: null,
                 }
             } else {
