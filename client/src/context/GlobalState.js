@@ -246,12 +246,12 @@ export const GlobalProvider = ({ children }) => {
                 const res = await axios.get(`/api/v1/rooms/${state.roomCode}/players`);
 
                 dispatch({
-                    type: 'GET_PLAYERS',
+                    type: 'SET_PLAYERS',
                     payload: res.data.data
                 });
             } else {
                 dispatch({
-                    type: 'GET_PLAYERS',
+                    type: 'SET_PLAYERS',
                     payload: []
                 });
             }
@@ -361,6 +361,33 @@ export const GlobalProvider = ({ children }) => {
                 payload: err.response.data.error
             });
         }    
+    }
+
+    async function shufflePlayers() {
+        try {
+            const res = await axios.post(`/api/v1/rooms/${state.roomCode}/players/shuffle`);
+            const newPlayers = res.data.data;
+            dispatch({
+                type: 'SET_PLAYERS',
+                payload: newPlayers
+            });
+
+            //emit message to shuffle players
+            state.socket.emit('shufflePlayers', { room: state.roomCode, players: newPlayers });
+         
+        } catch (err) {
+            dispatch({
+                type: 'ROOM_ERROR',
+                payload: err.response.data.error
+            });
+        }    
+    }
+
+    function changePlayerOrder(newPlayers) {
+        dispatch({
+            type: 'SET_PLAYERS',
+            payload: newPlayers
+        });
     }
 
     async function startGame() {
@@ -730,6 +757,8 @@ export const GlobalProvider = ({ children }) => {
             reactivatePlayer,
             leaveRoom,
             clearRoom,
+            shufflePlayers,
+            changePlayerOrder,
             setError,
             setStatus,
             startGame,

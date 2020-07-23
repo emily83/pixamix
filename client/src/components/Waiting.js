@@ -15,11 +15,12 @@ export const Waiting = () => {
 const WaitingHost = () => {
     const { player, roomCode, startGame, gamesPlayed } = useContext(GlobalContext);
 
-    const handleClick = () => {
+    const handleStartClick = () => {
         trackPromise(
             startGame()
         );
     }
+
     return (
         <>
             {gamesPlayed === 0 && (
@@ -34,8 +35,8 @@ const WaitingHost = () => {
             {gamesPlayed === 0 && (
                 <p>The game works best with 8 players but you can start whenever you like</p>
             )} 
-            
-            <button className="btn largeBtn" onClick={handleClick}>Start Game</button>
+
+            <button className="btn largeBtn" onClick={handleStartClick}>Start Game</button>
 
         </>
     )

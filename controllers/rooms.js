@@ -83,7 +83,7 @@ exports.addRoom = async (req, res, next) => {
         // Create new room with this code
         const newRoom = await Room.create({
             code,
-            players: [{ name: hostName, isHost: true, socketID }],
+            players: [{ name: hostName, isHost: true, socketID, sort: 1 }],
             games: []
         });
     

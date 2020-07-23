@@ -17,6 +17,14 @@ header img {
     height: 3em;
 }
 
+header .options {
+    position: absolute;
+    top: 0.7em;
+    right: 0.5em;
+    height: 1.5em;
+    display: none;
+}
+
 
 /* --------------------------- NAV BAR --------------------------- */
 
@@ -41,6 +49,14 @@ nav .playerName, nav .roomCode {
 
 nav .playerName span, nav .roomCode span {
     font-weight: bold;
+    vertical-align: middle;
+}
+
+nav .shufflePlayers {
+    width: 1.8em;
+    height: 1.8em;
+    vertical-align: middle;
+    cursor: pointer;
 }
 
 nav .link {

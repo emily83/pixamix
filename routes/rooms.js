@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getRoom, addRoom, updateRoom } = require('../controllers/rooms');
-const { addPlayerToRoom, getPlayers, deletePlayer, getRoomPlayer } = require('../controllers/players');
+const { addPlayerToRoom, getPlayers, deletePlayer, getRoomPlayer, shufflePlayers } = require('../controllers/players');
 const { getGames, addGame } = require('../controllers/games');
 const { getPlayerCard, getCards } = require('../controllers/cards');
 const { addRound, getRound } = require('../controllers/rounds');
@@ -24,6 +24,10 @@ router
     .route('/:code/players/:id')
     .delete(deletePlayer)
     .get(getRoomPlayer);
+
+router
+    .route('/:code/players/shuffle')
+    .post(shufflePlayers);
 
 router
     .route('/:code/games')

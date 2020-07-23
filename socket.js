@@ -121,6 +121,14 @@ module.exports = function(server) {
                 io.sockets.connected[socketID].leave(room)
             }
         });
+
+        socket.on('shufflePlayers', async ({ room, players }) => {
+            console.log(`shuffle players in ${room}`);     
+    
+            // Send broadcast to room to let them know new order of players
+            socket.broadcast.to(room).emit('changePlayerOrder', { room, players });
+  
+        });
  
         socket.on('startGame', async ({ room, gameID, playerID }) => {
             console.log(`start game ${gameID} in ${room}`);  

@@ -58,10 +58,10 @@ export default (state, action) => {
                 player: action.payload,
                 isHost: action.payload.isHost
             }
-        case 'GET_PLAYERS':
+        case 'SET_PLAYERS':
             return {
                 ...state,
-                players: action.payload
+                allPlayers: action.payload
             }
        
         case 'ADD_PLAYER':

@@ -16,6 +16,7 @@ function App() {
     removePlayer, 
     deactivatePlayer, 
     reactivatePlayer, 
+    changePlayerOrder,
     setStatus, 
     initGame, 
     gameID, 
@@ -87,6 +88,11 @@ function App() {
               //emit message to join room
               socket.emit('rejoinRoom', { room: roomCode, player });
             }
+        });
+
+        socket.on('changePlayerOrder', ({ room, players }) => {
+          console.log(`change player order in room ${room}`);
+           changePlayerOrder(players);                
         });
 
         socket.on('gameStarting', ({ room, gameID }) => {

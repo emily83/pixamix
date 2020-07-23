@@ -17,6 +17,10 @@ const PlayerSchema = new mongoose.Schema({
     socketID: {
         type: String
     },
+    sort: {
+        type: Number,
+        required: [true,'Please enter sort number']
+    },
     createdAt: {
         type: Date,
         default: Date.now

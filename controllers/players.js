@@ -30,7 +30,8 @@ exports.addPlayerToRoom = async (req, res, next) => {
          const { playerName, socketID } = req.body;
 
         // Add player to array within room
-        room.players.push({ name: playerName, socketID });
+        const sort = room.players.length + 1;
+        room.players.push({ name: playerName, socketID, sort });
         
         // Save room back to db
         await room.save();
@@ -231,3 +232,70 @@ exports.getRoomPlayer = async (req, res, next) => {
         });
     }
  }
+
+// @desc    Shuffle players in room
+// @route   POST /api/v1/rooms/:code/players/shuffle
+// @access  Public
+exports.shufflePlayers = async (req, res, next) => {
+    try {
+
+        // Get room code from parameters
+        const roomCode = req.params.code;
+
+        // Get room from db
+        const room = await Room.findOne({ code: roomCode });
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                error: 'Room not found'
+            });
+        }
+
+        if (room.status === 'playing'|| room.status === 'reveal') {
+            return res.status(404).json({
+                success: false,
+                error: 'Game in progress'
+            });
+        }
+
+        // Shuffle players
+        console.log(room.players);
+        shuffle(room.players);
+        room.players.forEach((p, i) => {
+            p.sort = i + 1;
+        });
+
+        // Save room back to db
+        room.markModified('players');
+        const x = await room.save();
+        return res.status(200).json({
+            success: true,
+            data: room.players
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        });          
+    }
+}
+
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+  
+    return array;
+  }
