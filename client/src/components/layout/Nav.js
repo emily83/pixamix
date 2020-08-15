@@ -4,7 +4,19 @@ import { trackPromise } from 'react-promise-tracker';
 import shufflePlayersIcon from '../../images/shufflePlayers.png'; 
 
 export const Nav = () => {
-    const { player, leaveRoom, endGame, isHost, status, allPlayers, shufflePlayers } = useContext(GlobalContext);
+    const { player, leaveRoom, endGame, isHost, status, allPlayers, shufflePlayers, revealEarly } = useContext(GlobalContext);
+
+    
+    function handleRevealClick(e) {
+        e.preventDefault();
+
+        const r = window.confirm("Are you sure you want to end this game early and reveal the drawings?");
+        if (r === true) {
+            trackPromise(
+                revealEarly()
+            );
+        }         
+    }
 
     function handleEndGameClick(e) {
         e.preventDefault();
@@ -49,7 +61,11 @@ export const Nav = () => {
                     /> 
                 )}  
 
-                {isHost && (status === 'playing' || status === 'reveal') && (
+                {isHost && (status === 'playing') && (
+                    <button className="link" onClick={handleRevealClick}>Reveal Early</button>  
+                )}   
+
+                {isHost && (status === 'reveal') && (
                     <button className="link" onClick={handleEndGameClick}>End Game</button>  
                 )}   
                 

@@ -679,6 +679,35 @@ export const GlobalProvider = ({ children }) => {
         }
     }
 
+    async function revealEarly() {
+        //if this is the host (who just clicked the button) 
+        if (state.isHost) {
+            try {
+                //set the status of the room to reveal
+                await axios.put(`/api/v1/rooms/${state.roomCode}/`, { status : 'reveal' }, config);
+
+                //emit message to server to reveal early
+                state.socket.emit('revealEarly', { room: state.roomCode });
+
+                //get reveal data and set local status to reveal
+                getRevealData();
+                resetReady();
+                setStatus('reveal');
+                             
+            } catch (err) {
+                dispatch({
+                    type: 'ROOM_ERROR',
+                    payload: err.response.data.error
+                });
+            }     
+        } else {
+            //if not host just get reveal data and set local status to reveal
+            getRevealData();
+            resetReady();
+            setStatus('reveal');
+        }
+    }
+
     async function getRevealData() {
    
         try {
@@ -774,7 +803,8 @@ export const GlobalProvider = ({ children }) => {
             resetReady,
             getNextRound,
             reveal,
-            setReveal
+            setReveal,
+            revealEarly
         }}>
             {children}
         </GlobalContext.Provider>

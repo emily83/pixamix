@@ -197,6 +197,13 @@ module.exports = function(server) {
             socket.broadcast.to(room).emit('stopTimer', { room });
         });
 
+        socket.on('revealEarly', async ({ room }) => {
+            console.log(`reveal early in ${room}`);  
+
+            // Send broadcast to room to let them know we are revealing
+            socket.broadcast.to(room).emit('revealEarly', { room });
+        });
+
         socket.on('endGame', async ({ room }) => {
             console.log(`end current game in ${room}`);  
             

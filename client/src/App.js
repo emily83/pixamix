@@ -30,7 +30,8 @@ function App() {
     playerReady,
     resetReady,
     round,
-    setReveal
+    setReveal,
+    revealEarly
    } = useContext(GlobalContext);
 
   useEffect(() => {
@@ -138,6 +139,11 @@ function App() {
             console.log(`round submitted by all in room ${room}`); 
             getNextRound();
         });
+
+        socket.on('revealEarly', ({ room }) => {
+          console.log(`early reveal in room ${room}`);
+          revealEarly();   
+      });
 
         socket.on('reveal', ({ cardNo, roundNo }) => {
           console.log(`reveal card ${cardNo} round ${roundNo}`); 

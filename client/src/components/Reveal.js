@@ -6,17 +6,19 @@ import { useEffect } from 'react';
 
 export const Reveal = () => {
 
-    const { completedCards, revealCardNo, revealRoundNo, reveal, allPlayers, numRounds, isHost } = useContext(GlobalContext);
+    const { completedCards, revealCardNo, revealRoundNo, reveal, allPlayers, isHost } = useContext(GlobalContext);
 
     const gameRef = useRef();
     const gameHeader2Ref = useRef();
     const wordRef = useRef();
 
     const [canvasDimensions, setCanvasDimensions] = useState({ width: 400, height: 400});
+    const [isContent, setIsContent] = useState(false);
     const [revealCardPlayerName, setRevealCardPlayerName] = useState('');
     const [secretWord, setSecretWord] = useState('');
     const [revealRound, setRevealRound] = useState({});
     const [roundPlayerName, setRoundPlayerName] = useState('');
+    const [isNextRound, setIsNextRound] = useState(false);
 
     useLayoutEffect(() => {
         console.log(gameRef);
@@ -55,22 +57,34 @@ export const Reveal = () => {
 
     useEffect(() => { 
         if (completedCards.length > 0) {
+            console.log(revealCardNo)
+
+            for (let i in completedCards) {
+                if (completedCards[i]['rounds'].length > 0) {
+                    setIsContent(true);
+                    break;
+                }
+            }
 
             const revealCard = completedCards.find(c => c.number === revealCardNo); 
- 
             if (revealCard) {
                 const revealCardPlayerID = revealCard.playerID;
                 const revealCardPlayer = allPlayers.find(p => p._id === revealCardPlayerID);
                 const revealRound = revealCard.rounds.find(r => r.number === revealRoundNo);
+                setRevealCardPlayerName(revealCardPlayer.name);
+                setSecretWord(revealCard.secretWord);
                 if (revealRound) {
-                    setRevealCardPlayerName(revealCardPlayer.name);
-                    setSecretWord(revealCard.secretWord);
+                    
                     setRevealRound(revealRound);
     
                     const roundPlayer = allPlayers.find(p => p._id === revealRound.playerID);
                     setRoundPlayerName(roundPlayer.name);
 
-                }             
+                    //set flag to indicate if there is a next round so we know whether to show button
+                    setIsNextRound(revealCard.rounds.find(r => r.number === revealRoundNo+1));   
+                } else {
+                    setRevealRound({ canvasData: {}, word: ''});
+                }    
             }        
   
         }     
@@ -111,8 +125,8 @@ export const Reveal = () => {
     }
     
     function nextRound() {
-        if (isHost && numRounds > revealRoundNo) {
-            reveal(revealCardNo, revealRoundNo + 1);
+        if (isHost && isNextRound) {
+            reveal(revealCardNo, revealRoundNo + 1);                   
         }      
     }
 
@@ -120,12 +134,15 @@ export const Reveal = () => {
         return (
             <>
                 <p>Game Over!</p>
-                { isHost &&
+                { isHost && isContent &&
                     <button className="btn largeBtn" onClick={handleRevealClick}>Reveal Cards</button>
                 }        
-                { !isHost &&
+                { !isHost && isContent &&
                     <p>Waiting for host to reveal drawings</p>
-                }   
+                }  
+                { !isContent &&
+                   <p>No drawings to reveal</p>
+                }  
             </>
         )
     } else {
@@ -149,14 +166,23 @@ export const Reveal = () => {
                         <div className="secretWord" ref={wordRef}><span>Secret Word:</span> {secretWord}</div>
                     </div>
                     <div className="gameHeader3">
-                        Round {revealRoundNo} - {revealRound.type === 'D' ? 'Drawing' : 'Guess'} by {roundPlayerName}
+                        { revealRound.type &&
+                            <>
+                            Round {revealRoundNo} - {revealRound.type === 'D' ? 'Drawing' : 'Guess'} by {roundPlayerName}
+                            </>
+                        }
+                        { !revealRound.type &&
+                            <>
+                            Round {revealRoundNo} - Not submitted
+                            </>
+                        }
                     </div>
                 
                     { isHost && revealRoundNo > 1 &&
                         <button className="arrow up" onClick={() => prevRound()}></button>   
                     }
 
-                    { isHost && numRounds > revealRoundNo &&
+                    { isHost && isNextRound &&
                         <button className="arrow down" onClick={() => nextRound()}></button>   
                     }
 
