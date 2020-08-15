@@ -1,3 +1,8 @@
+:root {
+    --primary-colour: #f9046c;
+    --secondary-colour: yellow;
+}
+
 header {
     background: white;
     text-align: center;

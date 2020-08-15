@@ -1,5 +1,11 @@
+:root {
+  --primary-colour: #f9046c;
+  --secondary-colour: yellow;
+}
+
 .blocker {
   position: absolute;
+  left: 0;
   top: 2.1em;
   width: 100%;
   height: calc(100% - 2.1em);

@@ -10,7 +10,7 @@ export const GameHeader = ({ handleCountdownComplete, handleCountdownTick }) => 
     //if resuming a countdown, set seconds to the number of seconds remaining
     let seconds = 30;
     if (round.type==='D') {
-        seconds = 90;
+        seconds = 30;
     }
     
     if (secondsRemaining !== null) {
