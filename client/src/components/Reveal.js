@@ -71,15 +71,23 @@ export const Reveal = () => {
                 const revealCardPlayerID = revealCard.playerID;
                 const revealCardPlayer = allPlayers.find(p => p._id === revealCardPlayerID);
                 const revealRound = revealCard.rounds.find(r => r.number === revealRoundNo);
-                setRevealCardPlayerName(revealCardPlayer.name);
+                if (revealCardPlayer) {
+                    setRevealCardPlayerName(revealCardPlayer.name);
+                } else {
+                    setRevealCardPlayerName('Unknown');
+                }               
                 setSecretWord(revealCard.secretWord);
                 if (revealRound) {
                     
                     setRevealRound(revealRound);
     
                     const roundPlayer = allPlayers.find(p => p._id === revealRound.playerID);
-                    setRoundPlayerName(roundPlayer.name);
-
+                    if (roundPlayer) {
+                        setRoundPlayerName(roundPlayer.name);
+                    } else {
+                        setRoundPlayerName('Unknown');
+                    }  
+                    
                     //set flag to indicate if there is a next round so we know whether to show button
                     setIsNextRound(revealCard.rounds.find(r => r.number === revealRoundNo+1));   
                 } else {
