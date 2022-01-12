@@ -17,7 +17,7 @@ const app = express();
 const server = http.createServer(app);
 
 // Body Parser Middleware
-app.use(express.json());
+app.use(express.json({limit: '1mb'}));
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
