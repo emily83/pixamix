@@ -1,4 +1,5 @@
 import React, { useState, useRef, useLayoutEffect, useContext } from 'react';
+import { unmountComponentAtNode } from 'react-dom'
 import { GlobalContext } from '../context/GlobalState';
 import { trackPromise } from 'react-promise-tracker';
 import { GameHeader } from './GameHeader';
@@ -171,9 +172,26 @@ export const Sketchpad = () => {
     function submitForm() {
         const newCanvasData = canvasRef.current.getSaveData();
 
+        closeConfirmAlert();
+
         trackPromise(
             submitRound({canvasData : newCanvasData})
         ); 
+    }
+
+    function closeConfirmAlert() {
+        // this is a hack to close the confirm alert if it's open at end of countdown
+        document.body.classList.remove('react-confirm-alert-body-element');
+        const target = document.getElementById('react-confirm-alert');
+        if (target) {
+          unmountComponentAtNode(target);
+          target.parentNode.removeChild(target);
+        }
+        const svg = document.getElementById('react-confirm-alert-firm-svg');
+        if (svg) {
+            svg.parentNode.removeChild(svg);
+        }
+        document.body.children[0].classList.remove('react-confirm-alert-blur');
     }
 
     const handleCountdownTick = (seconds) => {
